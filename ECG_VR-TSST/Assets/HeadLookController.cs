@@ -60,7 +60,11 @@ public class HeadLookController : MonoBehaviour
         Vector3 lookVector = new Vector3(-1,0,0);
         headUpVector = rootNode.InverseTransformDirection(Vector3.up);
         headLookVector = rootNode.InverseTransformDirection(lookVector);
-        anim = GameObject.FindGameObjectWithTag("MainNPC").GetComponent<Animator>();
+        GameObject mainNpc = GameObject.FindGameObjectWithTag("MainNPC");
+        if (mainNpc != null)
+        {
+            anim = mainNpc.GetComponent<Animator>();
+        }
 
         // Setup segments
         foreach (BendingSegment segment in segments)
@@ -96,11 +100,15 @@ public class HeadLookController : MonoBehaviour
 
     void LateUpdate()
     {
+        if (anim == null)
+            return;
+
         //Look out for th main auditor talking
         //If he is talking, every auditor should focus their view on the participant
         AnimatorClipInfo[] clipInfo = anim.GetCurrentAnimatorClipInfo(0);
+        string currentClip = (clipInfo.Length > 0 && clipInfo[0].clip != null) ? clipInfo[0].clip.name : "";
 
-        if (clipInfo[0].clip.name != "sit down idle")
+        if (currentClip != "sit down idle")
         {
             target = cam.transform.position;
             gTarget = cam.transform;
@@ -108,7 +116,7 @@ public class HeadLookController : MonoBehaviour
 
         //75% chance for each auditor to look at the participant
         //25% chance to look at a distraction point
-        if (!distraction && !lookAtCamera && clipInfo[0].clip.name == "sit down idle")
+        if (!distraction && !lookAtCamera && currentClip == "sit down idle")
         {
             int chance = UnityEngine.Random.Range(0,101);
             if (chance <= 75)
@@ -121,9 +129,17 @@ public class HeadLookController : MonoBehaviour
             else
             {
                 distraction = true;
-                int distPoint = UnityEngine.Random.Range(0, 4);
-                target = distractionPoints[distPoint].transform.position;
-                gTarget = distractionPoints[distPoint].transform;
+                if (distractionPoints != null && distractionPoints.Length > 0)
+                {
+                    int distPoint = UnityEngine.Random.Range(0, distractionPoints.Length);
+                    target = distractionPoints[distPoint].transform.position;
+                    gTarget = distractionPoints[distPoint].transform;
+                }
+                else
+                {
+                    target = cam.transform.position;
+                    gTarget = cam.transform;
+                }
                 StartCoroutine(WaitForNextPosition(1));
             }
         }
@@ -141,6 +157,10 @@ public class HeadLookController : MonoBehaviour
                 break;
             }
         }
+        if (gTarget == null)
+        {
+            gTarget = cam != null ? cam.transform : transform;
+        }
         int r = rndm.Next(0, gTarget.childCount);
 
         // Handle each segment
@@ -156,7 +176,10 @@ public class HeadLookController : MonoBehaviour
                 {
                     eyeDistractionPoints.Add(child);
                 }
-                eyeTarget = eyeDistractionPoints[r].position;
+                if (eyeDistractionPoints.Count > 0)
+                {
+                    eyeTarget = eyeDistractionPoints[Mathf.Clamp(r, 0, eyeDistractionPoints.Count - 1)].position;
+                }
             }
 
             Transform t = segment.lastTransform;

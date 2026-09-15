@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,16 +16,19 @@ public class SaveParticipantNumber : MonoBehaviour {
     /// </summary>
     public void OnButtonClicked()
     {
-        path = Application.dataPath + "/ParticipantNumber" + "/PN.txt";
+        if (inputField == null) return;
+        string dir = Application.dataPath + "/ParticipantNumber";
+        Directory.CreateDirectory(dir);
+        path = dir + "/PN.txt";
         string text = inputField.text;
 
         try
         {
             File.WriteAllText(path, text);
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
+            Debug.Log("Fehler beim schreiben der Datei:" + e);
         }
 
     }

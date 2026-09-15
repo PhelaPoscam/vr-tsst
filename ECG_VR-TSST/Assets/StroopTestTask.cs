@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
 using System;
@@ -60,7 +60,9 @@ public class StroopTestTask : AbstractTask
 
     private string boardTask;
 
-    private System.Random rndm = new System.Random(1809091995);
+    private System.Random rndm = new System.Random(ColorSeed);
+
+    private const int ColorSeed = 1809091995;
 
     private Round round;
 
@@ -88,6 +90,9 @@ public class StroopTestTask : AbstractTask
     [ContextMenu("GenerateSolutionText")]
     private void GenerateSolutionText()
     {
+        // Re-seed so the colour sequence is identical on every run, including task restarts.
+        rndm = new System.Random(ColorSeed);
+
         StringBuilder boardText = new StringBuilder();
         StringBuilder solutionText = new StringBuilder();
         string[] colorNames = new string[] { red, black, blue, yellow, green};
@@ -111,7 +116,10 @@ public class StroopTestTask : AbstractTask
             
         }
         Debug.Log(boardText.ToString());
-        _solution.text = "Board:\r\n" + boardText.ToString() + "\r\n\r\n\r\nSolution:\r\n" + solutionText.ToString();
+        if (_solution != null)
+        {
+            _solution.text = "Board:\r\n" + boardText.ToString() + "\r\n\r\n\r\nSolution:\r\n" + solutionText.ToString();
+        }
         boardTask = boardText.ToString();
     }
 
@@ -123,13 +131,15 @@ public class StroopTestTask : AbstractTask
     protected override void InactiveSetup()
     {
         _state = State.Inactive;
-        _taskText.enabled = false;
-        _solution.enabled = false;
-        red = redWord[LoadSettings().language];
-        blue = blueWord[LoadSettings().language];
-        yellow = yellowWord[LoadSettings().language];
-        green = greenWord[LoadSettings().language];
-        black = blackWord[LoadSettings().language];
+        if (_taskText != null) _taskText.enabled = false;
+        if (_solution != null) _solution.enabled = false;
+        Setting s = LoadSettings();
+        int lang = (s != null && redWord != null && s.language < redWord.Length) ? (int)s.language : 0;
+        red = (redWord != null && redWord.Length > lang) ? redWord[lang] : "Rot";
+        blue = (blueWord != null && blueWord.Length > lang) ? blueWord[lang] : "Blau";
+        yellow = (yellowWord != null && yellowWord.Length > lang) ? yellowWord[lang] : "Gelb";
+        green = (greenWord != null && greenWord.Length > lang) ? greenWord[lang] : "Grün";
+        black = (blackWord != null && blackWord.Length > lang) ? blackWord[lang] : "Schwarz";
         words = new string[] { red, blue, yellow, green, black, yellow, green, blue, black, red, yellow, green, red, black, blue, red, black, blue, yellow, green };
 
     }
@@ -143,8 +153,8 @@ public class StroopTestTask : AbstractTask
     {
         base.Init();
         _state = State.Welcome;
-        _taskText.enabled = true;
-        _solution.enabled = true;
+        if (_taskText != null) _taskText.enabled = true;
+        if (_solution != null) _solution.enabled = true;
         statusOfTask = CalculateTaskStatus(round, secondRoundActive, secondRoundAvailable);
         GenerateSolutionText();
         language = LoadSettings().language;
@@ -158,7 +168,7 @@ public class StroopTestTask : AbstractTask
 
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

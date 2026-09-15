@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -65,7 +65,7 @@ public class SpeechChiefPhysician : AbstractTask
     /// <returns>boolean for the calling class to go on</returns>
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

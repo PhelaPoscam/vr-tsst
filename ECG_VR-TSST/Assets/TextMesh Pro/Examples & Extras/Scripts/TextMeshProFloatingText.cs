@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.TextCore;
 using System.Collections;
 
 
@@ -55,7 +56,7 @@ namespace TMPro.Examples
                 m_textMeshPro.fontSize = 24;
                 //m_textMeshPro.enableExtraPadding = true;
                 //m_textMeshPro.enableShadows = false;
-                m_textMeshPro.enableKerning = false;
+                m_textMeshPro.fontFeatures.Remove(OTL_FeatureTag.kern);
                 m_textMeshPro.text = string.Empty;
 
                 StartCoroutine(DisplayTextMeshProFloatingText());

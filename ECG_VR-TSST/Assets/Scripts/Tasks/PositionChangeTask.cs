@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 
 public class PositionChangeTask : AbstractTask
@@ -52,7 +52,7 @@ public class PositionChangeTask : AbstractTask
     /// <returns></returns>
     public override bool Next(Round round, bool secondRoundActive, bool secondRoundAvailable)
     {
-        throw new System.NotImplementedException();
+        return Next();
     }
 
 

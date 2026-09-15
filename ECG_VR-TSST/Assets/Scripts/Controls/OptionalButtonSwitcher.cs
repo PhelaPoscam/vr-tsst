@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class OptionalButtonSwitcher : MonoBehaviour
 {
@@ -37,9 +37,10 @@ public class OptionalButtonSwitcher : MonoBehaviour
 
     public void DisableAll()
     {
+        if (_allOptionalButtons == null) return;
         foreach (var button in _allOptionalButtons)
         {
-            button.enabled = false;
+            if (button != null) button.enabled = false;
         }
     }
 
@@ -48,7 +49,7 @@ public class OptionalButtonSwitcher : MonoBehaviour
 		if (_enabledButtons == null) return;
         foreach (var button in _enabledButtons)
         {
-            button.enabled = true;
+            if (button != null) button.enabled = true;
         }
     }
 

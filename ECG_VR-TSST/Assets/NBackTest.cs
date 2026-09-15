@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Text;
@@ -93,7 +93,7 @@ public class NBackTest : AbstractTask
     [ContextMenu("StartupTest")]
     private void StartupTest()
     {
-        cross.gameObject.SetActive(true);
+        if (cross != null) cross.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -105,8 +105,11 @@ public class NBackTest : AbstractTask
         _state = State.Inactive;
         _sequenceState = 0;
         _paused = false;
-        _solution.enabled = false;
+        if (_solution != null) _solution.enabled = false;
         firstInSequence = true;
+        count = 0;
+        prevQuads.Clear();
+        bools.Clear();
     }
 
 
@@ -165,7 +168,7 @@ public class NBackTest : AbstractTask
 
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

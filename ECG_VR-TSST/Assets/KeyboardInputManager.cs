@@ -29,41 +29,27 @@ public class KeyboardInputManager : MonoBehaviour {
     /// </summary>
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        CheckButton(KeyCode.Alpha1, weiter);
+        CheckButton(KeyCode.Alpha2, erneut);
+        CheckButton(KeyCode.Alpha3, zeitNichtUm);
+        CheckButton(KeyCode.Alpha4, nichtVerstanden);
+        CheckButton(KeyCode.Alpha5, lautUndDeutlich);
+        CheckButton(KeyCode.Alpha6, vonVorne);
+        CheckButton(KeyCode.Alpha7, falsch);
+        CheckButton(KeyCode.Alpha8, richtig);
+        CheckButton(KeyCode.Alpha9, ergebnis);
+    }
+
+    /// <summary>
+    /// Triggers the button if it is assigned and its key was pressed this frame
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="button"></param>
+    private void CheckButton(KeyCode key, Button button)
+    {
+        if (button != null && Input.GetKeyDown(key))
         {
-            weiter.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            erneut.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            zeitNichtUm.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            nichtVerstanden.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            lautUndDeutlich.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            vonVorne.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            falsch.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            richtig.onClick.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            ergebnis.onClick.Invoke();
+            button.onClick.Invoke();
         }
     }
 }

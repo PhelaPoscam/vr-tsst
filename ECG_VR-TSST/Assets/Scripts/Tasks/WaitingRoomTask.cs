@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,9 +40,9 @@ public class WaitingRoomTask : AbstractTask
     [ContextMenu("Inactive Setup")]
     protected override void InactiveSetup()
     {
-        _readyText.enabled = false;
-        _surveillanceText.enabled = false;
-        _initalText.enabled = false;
+        if (_readyText != null) _readyText.enabled = false;
+        if (_surveillanceText != null) _surveillanceText.enabled = false;
+        if (_initalText != null) _initalText.enabled = false;
         _state = State.Inactive;
     }
 
@@ -63,7 +63,7 @@ public class WaitingRoomTask : AbstractTask
 
     public override bool Next(Round round, bool secondRoundActive, bool secondRoundAvailable)
     {
-        throw new System.NotImplementedException();
+        return Next();
     }
 
     /// <summary>

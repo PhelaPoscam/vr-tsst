@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -34,9 +34,19 @@ public class GenericButton : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown(_inputButton))
+        if (!string.IsNullOrEmpty(_inputButton))
         {
-            TriggerGenericButtonClick();
+            try
+            {
+                if (Input.GetButtonDown(_inputButton))
+                {
+                    TriggerGenericButtonClick();
+                }
+            }
+            catch (System.ArgumentException)
+            {
+                // Input button not configured in InputManager
+            }
         }
     }
 

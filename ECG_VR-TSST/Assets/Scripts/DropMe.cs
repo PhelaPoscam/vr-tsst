@@ -22,7 +22,8 @@ public class DropMe : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointe
     /// <param name="data"></param>
     public void OnDrop(PointerEventData data)
     {
-        containerImage.color = normalColor;
+        if (containerImage != null)
+            containerImage.color = normalColor;
 
         if (receivingImage == null)
             return;
@@ -30,16 +31,18 @@ public class DropMe : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointe
         Sprite dropSprite = GetDropSprite(data);
         if (dropSprite != null)
         {
-            receivingImage.color = new Color(1, 1, 1, 1);
-            receivingImage.sprite = dropSprite;
-            receivingImage.SetNativeSize();
-        }
-
-        if (dropSprite.name.Equals("Blank"))
-        {
-            receivingImage.color = new Color(1, 1, 1, 0);
-            receivingImage.sprite = null;
-            receivingImage.SetNativeSize();
+            if (dropSprite.name.Equals("Blank"))
+            {
+                receivingImage.color = new Color(1, 1, 1, 0);
+                receivingImage.sprite = null;
+                receivingImage.SetNativeSize();
+            }
+            else
+            {
+                receivingImage.color = new Color(1, 1, 1, 1);
+                receivingImage.sprite = dropSprite;
+                receivingImage.SetNativeSize();
+            }
         }
 
     }

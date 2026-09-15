@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -75,8 +75,8 @@ public class NumberSeriesTask : AbstractTask
     {
         _sequenceState = 0;
         _paused = false;
-        _boardText.enabled = false;
-        _solutionText.enabled = false;
+        if (_boardText != null) _boardText.enabled = false;
+        if (_solutionText != null) _solutionText.enabled = false;
         _state = State.Inactive;
     }
 
@@ -87,13 +87,16 @@ public class NumberSeriesTask : AbstractTask
     protected override void Init()
     {
         base.Init();
-        OptionalButtonSwitcher.Instance.DisableAll();
+        if (OptionalButtonSwitcher.Instance != null) OptionalButtonSwitcher.Instance.DisableAll();
         _state = State.Welcome;
-        _solutionText.enabled = true;
-        _boardText.enabled = true;
+        if (_solutionText != null) _solutionText.enabled = true;
+        if (_boardText != null)
+        {
+            _boardText.enabled = true;
+            _boardText.text = "";
+        }
         firstTime = true;
         statusOfTask = CalculateTaskStatus(round, secondRoundActive, secondRoundAvailable);
-        _boardText.text = "";
         language = LoadSettings().language;
     }
 
@@ -104,7 +107,7 @@ public class NumberSeriesTask : AbstractTask
     /// <returns>boolean for the calling class to go on</returns>
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

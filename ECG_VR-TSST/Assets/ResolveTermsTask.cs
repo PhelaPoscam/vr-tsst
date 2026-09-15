@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -75,8 +75,8 @@ public class ResolveTermsTask: AbstractTask
     {
         _sequenceState = 0;
         _paused = false;
-        _boardText.enabled = false;
-        _solutionText.enabled = false;
+        if (_boardText != null) _boardText.enabled = false;
+        if (_solutionText != null) _solutionText.enabled = false;
         _state = State.Inactive;
     }
 
@@ -88,11 +88,14 @@ public class ResolveTermsTask: AbstractTask
     protected override void Init()
     {
         base.Init();
-        OptionalButtonSwitcher.Instance.DisableAll();
+        if (OptionalButtonSwitcher.Instance != null) OptionalButtonSwitcher.Instance.DisableAll();
         _state = State.Welcome;
-        _solutionText.enabled = true;
-        _boardText.enabled = true;
-        _boardText.text = "";
+        if (_solutionText != null) _solutionText.enabled = true;
+        if (_boardText != null)
+        {
+            _boardText.enabled = true;
+            _boardText.text = "";
+        }
         firstTime = true;
         statusOfTask = CalculateTaskStatus(round, secondRoundActive, secondRoundAvailable);
         Debug.Log(statusOfTask);
@@ -107,7 +110,7 @@ public class ResolveTermsTask: AbstractTask
 
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

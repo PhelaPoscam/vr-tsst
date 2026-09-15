@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -20,17 +20,32 @@ public class ChairHandler : MonoBehaviour {
 
         try
         {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
+            if (File.Exists(path))
+            {
+                str = File.ReadAllText(path);
+                Debug.Log("ausgelesen");
+            }
+            else
+            {
+                Debug.LogWarning("Settings file does not exist at: " + path);
+            }
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
             Debug.Log("Fehler beim auslesen der Datei:" + e);
         }
 
-        if (!str.Equals(null)) 
+        if (!string.IsNullOrEmpty(str)) 
         {
-            setting = JsonUtility.FromJson<Setting>(str);
+            try
+            {
+                Setting loaded = JsonUtility.FromJson<Setting>(str);
+                if (loaded != null) setting = loaded;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Fehler beim deserialisieren der Settings: " + e);
+            }
         }
 
         setChairs(setting);
@@ -42,10 +57,8 @@ public class ChairHandler : MonoBehaviour {
     /// <param name="setting"></param>
     public void setChairs(Setting setting)
     {
-        if (setting.oneAuditor)
-        {
-            secondChair.SetActive(false);
-            thirdChair.SetActive(false);
-        }
+        if (setting == null) return;
+        if (secondChair != null) secondChair.SetActive(!setting.oneAuditor);
+        if (thirdChair != null) thirdChair.SetActive(!setting.oneAuditor);
     }
 }

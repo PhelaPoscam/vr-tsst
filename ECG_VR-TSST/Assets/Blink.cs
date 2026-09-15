@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +21,11 @@ public class Blink : MonoBehaviour {
     /// </summary>
     private void Awake()
     {
+        if (lowLidR == null || lowLidL == null || upLidR == null || upLidL == null)
+        {
+            Debug.LogWarning("[Blink] Eyelid transforms not fully assigned on " + gameObject.name);
+            return;
+        }
         StartCoroutine("EyesClosed");
     }
 

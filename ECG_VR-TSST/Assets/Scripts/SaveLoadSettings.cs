@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,91 +37,133 @@ public class SaveLoadSettings : MonoBehaviour
         Setting setting = new Setting();
         try
         {
-             str = File.ReadAllText(path);
-        }catch(IOException e)
+            if (File.Exists(path))
+            {
+                str = File.ReadAllText(path);
+            }
+            else
+            {
+                Debug.LogWarning("Settings file does not exist at: " + path);
+            }
+        }
+        catch(System.Exception e)
         {
             Debug.Log("Fehler beim auslesen der Datei:" + e);
         }
 
-        if (!str.Equals(""))
+        if (!string.IsNullOrEmpty(str))
         {
-            setting = JsonUtility.FromJson<Setting>(str);
+            try
+            {
+                Setting loaded = JsonUtility.FromJson<Setting>(str);
+                if (loaded != null) setting = loaded;
+            }
+            catch(System.Exception e)
+            {
+                Debug.LogError("Fehler beim deserialisieren der Settings: " + e);
+            }
         }
 
-        if (setting.oneAuditor)
+        if (setting.firstRound == null) setting.firstRound = new string[0];
+        if (setting.secondRound == null) setting.secondRound = new string[0];
+
+        if (pruefer != null)
         {
-            pruefer.value = 0;
-        }
-        else
-        {
-            pruefer.value = 1;
+            pruefer.value = setting.oneAuditor ? 0 : 1;
         }
 
-        if (setting.secondRoundAnnouncement)
+        if (announcement != null)
         {
-            announcement.value = 0;
-        }
-        else
-        {
-            announcement.value = 1;
+            announcement.value = setting.secondRoundAnnouncement ? 0 : 1;
         }
 
-        sprache.value = setting.language;
+        if (sprache != null)
+        {
+            sprache.value = setting.language;
+        }
 
-        _firstIsSecond.isOn = setting.firstIsSecond;
+        if (_firstIsSecond != null)
+        {
+            _firstIsSecond.isOn = setting.firstIsSecond;
+        }
 
         for(int i = 1; i <= 2; i++)
         {
             for(int j = 1; j <= 5; j++)
             {
-                GameObject.FindGameObjectWithTag(i + "R" + j + "T").transform.GetChild(0).gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 0);
-                GameObject.FindGameObjectWithTag(i + "R" + j + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite = null;
-            }
-        }
-
-        for(int i = 0; i < setting.firstRound.Length; i++)
-        {
-            if(setting.firstRound[i] != null)
-            {
-                for(int j = 0; j < allSprites.Length; j++)
+                GameObject slot = GameObject.FindGameObjectWithTag(i + "R" + j + "T");
+                if (slot != null && slot.transform.childCount > 0)
                 {
-                    if (setting.firstRound[i].Equals(allSprites[j].name))
+                    Image img = slot.transform.GetChild(0).GetComponent<Image>();
+                    if (img != null)
                     {
-                        GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 1); 
-                        GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite = allSprites[j];
-                        GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().SetNativeSize();
+                        img.color = new Color(1, 1, 1, 0);
+                        img.sprite = null;
                     }
-                    
                 }
-                
             }
-            
         }
 
-        for (int i = 0; i < setting.secondRound.Length; i++)
+        if (setting.firstRound != null && allSprites != null)
         {
-            if (setting.secondRound[i] != null)
+            for(int i = 0; i < setting.firstRound.Length; i++)
             {
-                for (int j = 0; j < allSprites.Length; j++)
+                if(!string.IsNullOrEmpty(setting.firstRound[i]))
                 {
-                    if (setting.secondRound[i].Equals(allSprites[j].name))
+                    for(int j = 0; j < allSprites.Length; j++)
                     {
-                        GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 1);
-                        GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite = allSprites[j];
-                        GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().SetNativeSize();
+                        if (allSprites[j] != null && setting.firstRound[i].Equals(allSprites[j].name))
+                        {
+                            GameObject slot = GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T");
+                            if (slot != null && slot.transform.childCount > 0)
+                            {
+                                Image img = slot.transform.GetChild(0).GetComponent<Image>();
+                                if (img != null)
+                                {
+                                    img.color = new Color(1, 1, 1, 1); 
+                                    img.sprite = allSprites[j];
+                                    img.SetNativeSize();
+                                }
+                            }
+                        }
                     }
-
                 }
-
             }
-
         }
 
-        savedText.gameObject.GetComponent<Text>().text = "Settings Loaded!";
-        savedText.gameObject.SetActive(true);
-        StartCoroutine("Wait");
+        if (setting.secondRound != null && allSprites != null)
+        {
+            for (int i = 0; i < setting.secondRound.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(setting.secondRound[i]))
+                {
+                    for (int j = 0; j < allSprites.Length; j++)
+                    {
+                        if (allSprites[j] != null && setting.secondRound[i].Equals(allSprites[j].name))
+                        {
+                            GameObject slot = GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T");
+                            if (slot != null && slot.transform.childCount > 0)
+                            {
+                                Image img = slot.transform.GetChild(0).GetComponent<Image>();
+                                if (img != null)
+                                {
+                                    img.color = new Color(1, 1, 1, 1);
+                                    img.sprite = allSprites[j];
+                                    img.SetNativeSize();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-
+        if (savedText != null)
+        {
+            savedText.text = "Settings Loaded!";
+            savedText.gameObject.SetActive(true);
+            StartCoroutine("Wait");
+        }
     }
 
     //Get every task dropped onto the first round drop area
@@ -130,11 +172,15 @@ public class SaveLoadSettings : MonoBehaviour
         string[] firstRound = new string[5];
         for(int i = 0; i < firstRound.Length; i++)
         {
-            if (GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite)
+            GameObject slot = GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T");
+            if (slot != null && slot.transform.childCount > 0)
             {
-                firstRound[i] = GameObject.FindGameObjectWithTag("1R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite.name;
+                Image img = slot.transform.GetChild(0).GetComponent<Image>();
+                if (img != null && img.sprite != null)
+                {
+                    firstRound[i] = img.sprite.name;
+                }
             }
-            
         }
         //delete empty spaces between tasks
         List<string> temp = new List<string>();
@@ -155,11 +201,15 @@ public class SaveLoadSettings : MonoBehaviour
         string[] secondRound = new string[5];
         for (int i = 0; i < secondRound.Length; i++)
         {
-            if (GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite)
+            GameObject slot = GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T");
+            if (slot != null && slot.transform.childCount > 0)
             {
-                secondRound[i] = GameObject.FindGameObjectWithTag("2R" + (i + 1) + "T").transform.GetChild(0).gameObject.GetComponent<Image>().sprite.name;
+                Image img = slot.transform.GetChild(0).GetComponent<Image>();
+                if (img != null && img.sprite != null)
+                {
+                    secondRound[i] = img.sprite.name;
+                }
             }
-
         }
         //delete empty spaces between tasks
         List<string> temp = new List<string>();
@@ -182,45 +232,26 @@ public class SaveLoadSettings : MonoBehaviour
     /// <param name="secondRound"></param>
     private void ConvertSettings(Dropdown[] dropdowns, string[] firstRound, string[] secondRound, Toggle t)
     {
-        bool oneAuditor;
-        bool secondRoundAnnouncement;
-        bool firstIsSecond;
-        byte language;
+        bool oneAuditor = (dropdowns != null && dropdowns.Length > 0 && dropdowns[0] != null) ? dropdowns[0].value == 0 : false;
+        bool secondRoundAnnouncement = (dropdowns != null && dropdowns.Length > 1 && dropdowns[1] != null) ? dropdowns[1].value == 0 : true;
+        byte language = (dropdowns != null && dropdowns.Length > 2 && dropdowns[2] != null) ? (byte)dropdowns[2].value : (byte)0;
 
-        if (dropdowns[0].value.Equals(0))
-        {
-            oneAuditor = true;
-        }
-        else
-        {
-            oneAuditor = false;
-        }
-
-        if (dropdowns[1].value.Equals(0))
-        {
-            secondRoundAnnouncement = true;
-        }
-        else
-        {
-            secondRoundAnnouncement = false;
-        }
-
-        language = (byte)dropdowns[2].value;
+        if (firstRound == null) firstRound = new string[0];
+        if (secondRound == null) secondRound = new string[0];
 
         if(firstRound.Length == 0 && secondRound.Length != 0)
         {
             firstRound = secondRound;
-            secondRound = null;
+            secondRound = new string[0];
         }
 
-        firstIsSecond = t.isOn;
+        bool firstIsSecond = t != null && t.isOn;
 
         Setting currentSetting = new Setting(oneAuditor, secondRoundAnnouncement, firstRound, secondRound, language, firstIsSecond);
         string str = JsonUtility.ToJson(currentSetting);
         Directory.CreateDirectory(Application.dataPath + "/Settings");
         string path = Application.dataPath + "/Settings/Settings.txt";
 
-        
         try
         {
             File.WriteAllText(path, str);
@@ -230,9 +261,12 @@ public class SaveLoadSettings : MonoBehaviour
             Debug.Log("Fehler beim schreiben der Datei:" + e);
         }
 
-        savedText.gameObject.GetComponent<Text>().text = "Settings Saved!";
-        savedText.gameObject.SetActive(true);
-        StartCoroutine("Wait");
+        if (savedText != null)
+        {
+            savedText.text = "Settings Saved!";
+            savedText.gameObject.SetActive(true);
+            StartCoroutine("Wait");
+        }
     }
 
     /// <summary>
@@ -242,6 +276,9 @@ public class SaveLoadSettings : MonoBehaviour
     IEnumerator Wait()
     {
         yield return new WaitForSecondsRealtime(2f);
-        savedText.gameObject.SetActive(false);
+        if (savedText != null)
+        {
+            savedText.gameObject.SetActive(false);
+        }
     }
 }

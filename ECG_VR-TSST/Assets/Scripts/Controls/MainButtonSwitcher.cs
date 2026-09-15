@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class MainButtonSwitcher : MonoBehaviour {
 	
@@ -22,16 +22,16 @@ public class MainButtonSwitcher : MonoBehaviour {
 	}
 	
 	public void Next(bool enabled) {
-		_next.enabled = enabled;
+		if (_next != null) _next.enabled = enabled;
 	}
 
 	public void Repeat(bool enabled) {
-		_repeat.enabled = enabled;
+		if (_repeat != null) _repeat.enabled = enabled;
 	}
 	
 	public void All(bool enabled) {
-		_next.enabled = enabled;
-		_repeat.enabled =enabled;
+		if (_next != null) _next.enabled = enabled;
+		if (_repeat != null) _repeat.enabled = enabled;
 	}
 
 }

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -62,11 +62,14 @@ public class ComputeChainTask : AbstractTask
     [ContextMenu("Inactive Setup")]
     protected override void InactiveSetup()
     {
-        foreach (var ts in _sequences)
+        if (_sequences != null)
         {
-            ts.InactiveSetup();
+            foreach (var ts in _sequences)
+            {
+                if (ts != null) ts.InactiveSetup();
+            }
         }
-        _solutionText.enabled = false;
+        if (_solutionText != null) _solutionText.enabled = false;
         _state = State.Inactive;
     }
 
@@ -77,7 +80,7 @@ public class ComputeChainTask : AbstractTask
     protected override void Init()
     {
         base.Init();
-        _solutionText.enabled = true;
+        if (_solutionText != null) _solutionText.enabled = true;
         _state = State.Welcome;
         statusOfTask = CalculateTaskStatus(round, secondRoundActive, secondRoundAvailable);
         _sequenceState = 0;
@@ -92,7 +95,7 @@ public class ComputeChainTask : AbstractTask
     /// <returns>boolean for the calling class to go on</returns>
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -54,7 +54,7 @@ public class ChangePositionBack : AbstractTask {
     /// <returns></returns>
     public override bool Next(Round round, bool secondRoundActive, bool secondRoundAvailable)
     {
-        throw new System.NotImplementedException();
+        return Next();
     }
 
     /// <summary>

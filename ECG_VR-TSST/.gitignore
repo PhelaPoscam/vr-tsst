@@ -25,6 +25,12 @@
 
 # Visual Studio cache directory
 .vs/
+.commandcode/
+.agents/
+.gemini/
+.claude/
+.cursor/
+.windsurf/
 
 # Gradle cache directory
 .gradle/

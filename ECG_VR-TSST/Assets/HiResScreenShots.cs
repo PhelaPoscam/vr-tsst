@@ -37,18 +37,25 @@ public class HiResScreenShots : MonoBehaviour
         takeHiResShot |= Input.GetKeyDown(KeyCode.F8);
         if (takeHiResShot)
         {
+            Camera cam = Camera.main;
+            if (cam == null)
+            {
+                Debug.LogWarning("[HiResScreenShots] No camera tagged MainCamera; screenshot skipped.");
+                takeHiResShot = false;
+                return;
+            }
             #if !UNITY_4_3
             #if !UNITY_WEBPLAYER
                 TextureFormat textForm = nonTransp;
                 if (transparent)
                     textForm = transp;
                 RenderTexture rt = new RenderTexture(resWidth * enlarge, resHeight * enlarge, 24);
-                Camera.main.targetTexture = rt;
+                cam.targetTexture = rt;
                 Texture2D screenShot = new Texture2D(resWidth * enlarge, resHeight * enlarge, textForm, false);
-                Camera.main.Render();
+                cam.Render();
                 RenderTexture.active = rt;
                 screenShot.ReadPixels(new Rect(0, 0, resWidth * enlarge, resHeight * enlarge), 0, 0);
-                Camera.main.targetTexture = null;
+                cam.targetTexture = null;
                 RenderTexture.active = null; // JC: added to avoid errors
                 Destroy(rt);
                 byte[] bytes = screenShot.EncodeToPNG();

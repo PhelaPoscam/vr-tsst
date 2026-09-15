@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -59,8 +59,6 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private string[] preRoundTwo = {"ChangePositionBack" ,"Uninitialized", "Start", "WaitingRoom", "PositionChange" };
 
-    [SerializeField] private string[] firstRound = null;
-
     [SerializeField] private string endRound = "End";
 
     [SerializeField] private string switchRound = "Switch";
@@ -100,7 +98,7 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
 
-        XRSettings.enabled = true;
+        SetXRDisplayEnabled(true);
 
         Directory.CreateDirectory(Application.dataPath + "/Logs");
 
@@ -108,11 +106,21 @@ public class GameManager : MonoBehaviour
 
         WriteLogEntry(false);
         uninitialized = start = waitingRoom = positionChange = changePositionBack = end = presentation = speechDreamJob = speechProjectManager = speechChiefPhysician = numberSeries = computeChain = subtraction = stroop = resolveTerms = nBackTest = true;
-        GameObject NPCHandler = GameObject.FindGameObjectWithTag("NPCHandler");
-        NPCHandler.GetComponent<NPCHandler>().setNPCs(LoadSettings());
+        
+        Setting currentSetting = LoadSettings();
 
-        string[] firstRoundSettings = LoadSettings().firstRound;
-        string[] secondRoundSettings = LoadSettings().secondRound;
+        GameObject npcHandlerObj = GameObject.FindGameObjectWithTag("NPCHandler");
+        if (npcHandlerObj != null)
+        {
+            NPCHandler handler = npcHandlerObj.GetComponent<NPCHandler>();
+            if (handler != null)
+            {
+                handler.setNPCs(currentSetting);
+            }
+        }
+
+        string[] firstRoundSettings = currentSetting.firstRound ?? new string[0];
+        string[] secondRoundSettings = currentSetting.secondRound ?? new string[0];
 
         for(int i = 0; i < firstRoundSettings.Length; i++)
         {
@@ -284,7 +292,7 @@ public class GameManager : MonoBehaviour
                     MainButtonSwitcher.Instance.Repeat(true);
                     Fader.Instance.Fade(Color.black, _fadingTime, false, Fader.VisualFadeType.Start);
                     WriteLogEntry("End Study");
-                    XRSettings.enabled = false;
+                    SetXRDisplayEnabled(false);
                     StartCoroutine(this.LoadSceneWithDelay(1));
                 break;
             case "Switch":
@@ -376,23 +384,31 @@ public class GameManager : MonoBehaviour
     private Setting LoadSettings()
     {
         string path = Application.dataPath + "/Settings/Settings.txt";
-        string str = "";
         Setting setting = new Setting();
 
         try
         {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
+            if (File.Exists(path))
+            {
+                string str = File.ReadAllText(path);
+                if (!string.IsNullOrEmpty(str))
+                {
+                    Setting loaded = JsonUtility.FromJson<Setting>(str);
+                    if (loaded != null) setting = loaded;
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Settings file does not exist at: " + path);
+            }
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
+            Debug.LogError("Fehler beim auslesen der Datei:" + e);
         }
 
-        if (!str.Equals(""))
-        {
-            setting = JsonUtility.FromJson<Setting>(str);
-        }
+        if (setting.firstRound == null) setting.firstRound = new string[0];
+        if (setting.secondRound == null) setting.secondRound = new string[0];
 
         return setting;
     }
@@ -513,29 +529,35 @@ public class GameManager : MonoBehaviour
 
             }
             string first = "[";
-            for(int i = 0; i < setting.firstRound.Length; i++)
+            if (setting.firstRound != null)
             {
-                if(i < setting.firstRound.Length - 1)
+                for(int i = 0; i < setting.firstRound.Length; i++)
                 {
-                    first +=  setting.firstRound[i] + ", ";
-                }
-                else
-                {
-                    first += setting.firstRound[i];
+                    if(i < setting.firstRound.Length - 1)
+                    {
+                        first +=  setting.firstRound[i] + ", ";
+                    }
+                    else
+                    {
+                        first += setting.firstRound[i];
+                    }
                 }
             }
             first += "]";
 
             string second = "[";
-            for (int i = 0; i < setting.secondRound.Length; i++)
+            if (setting.secondRound != null)
             {
-                if (i < setting.secondRound.Length - 1)
+                for (int i = 0; i < setting.secondRound.Length; i++)
                 {
-                    second += setting.secondRound[i] + ", ";
-                }
-                else
-                {
-                    second += setting.secondRound[i];
+                    if (i < setting.secondRound.Length - 1)
+                    {
+                        second += setting.secondRound[i] + ", ";
+                    }
+                    else
+                    {
+                        second += setting.secondRound[i];
+                    }
                 }
             }
             second += "]";
@@ -574,6 +596,27 @@ public class GameManager : MonoBehaviour
         }
         wholePath = $"{Application.dataPath}{restOfPath}_ParticipantNumber_{participantNumber}.txt";
         return wholePath;
+    }
+
+    /// <summary>
+    /// Starts or stops the active XR display subsystem. Replaces the deprecated XRSettings.enabled setter.
+    /// </summary>
+    /// <param name="enabled">true to start XR rendering, false to stop it</param>
+    private void SetXRDisplayEnabled(bool enabled)
+    {
+        List<XRDisplaySubsystem> displays = new List<XRDisplaySubsystem>();
+        SubsystemManager.GetSubsystems(displays);
+        foreach (XRDisplaySubsystem display in displays)
+        {
+            if (enabled)
+            {
+                if (!display.running) display.Start();
+            }
+            else
+            {
+                if (display.running) display.Stop();
+            }
+        }
     }
 
     IEnumerator<object> LoadSceneWithDelay(float time)

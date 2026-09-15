@@ -14,22 +14,13 @@ public class DropdownListener : MonoBehaviour
     private bool toggleActive;
     private void Update()
     {
+        if (Drop == null) return;
 
-        if (Drop.value.Equals(0))
-        {
-            Vortrag.interactable = false;
-            Rueckwaerts.interactable = false;
-            Reihen.interactable = false;
-            Kopfrechnen.interactable = false;
-        }
-        else
-        {
-            Vortrag.interactable = true;
-            Rueckwaerts.interactable = true;
-            Reihen.interactable = true;
-            Kopfrechnen.interactable = true;
-        }
-
+        bool interactable = Drop.value != 0;
+        if (Vortrag != null) Vortrag.interactable = interactable;
+        if (Rueckwaerts != null) Rueckwaerts.interactable = interactable;
+        if (Reihen != null) Reihen.interactable = interactable;
+        if (Kopfrechnen != null) Kopfrechnen.interactable = interactable;
     }
 
 }

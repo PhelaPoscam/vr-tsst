@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,14 +25,20 @@ public class ClearAllSettings : MonoBehaviour {
     /// </summary>
     public void onButtonClicked()
     {
-        numberOfNPCs.value = 0;
-        language.value = 0;
-        secondRoundAnnouncement.value = 0;
-        t.isOn = false;
-        foreach(Image i in allTasks)
+        if (numberOfNPCs != null) numberOfNPCs.value = 0;
+        if (language != null) language.value = 0;
+        if (secondRoundAnnouncement != null) secondRoundAnnouncement.value = 0;
+        if (t != null) t.isOn = false;
+        if (allTasks != null)
         {
-            i.color = new Color(1, 1, 1, 0);
-            i.sprite = null;
+            foreach(Image i in allTasks)
+            {
+                if (i != null)
+                {
+                    i.color = new Color(1, 1, 1, 0);
+                    i.sprite = null;
+                }
+            }
         }
     }
 }

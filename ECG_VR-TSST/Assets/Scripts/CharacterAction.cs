@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ChracterAction", menuName = "CharacterAction")]
@@ -27,9 +27,14 @@ public class CharacterAction : ScriptableObject
 
     private void OnValidate()
     {
-        if (string.IsNullOrEmpty(_animationTrigger) && _clip != null)
+        if (string.IsNullOrEmpty(_animationTrigger) && _clip != null && _clip.Length > 0)
         {
-            _animationTrigger = _clip[LoadSettings().language].name;
+            Setting s = LoadSettings();
+            int lang = (s != null && s.language < _clip.Length) ? (int)s.language : 0;
+            if (_clip[lang] != null)
+            {
+                _animationTrigger = _clip[lang].name;
+            }
         }
         if (string.IsNullOrEmpty(_animationTrigger) || _clip == null)
         {
@@ -40,23 +45,24 @@ public class CharacterAction : ScriptableObject
 
     private Setting LoadSettings()
     {
-        string path = Application.dataPath + "/Settings.txt";
-        string str = "";
+        string path = Application.dataPath + "/Settings/Settings.txt";
         Setting setting = new Setting();
 
         try
         {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
+            if (File.Exists(path))
+            {
+                string str = File.ReadAllText(path);
+                if (!string.IsNullOrEmpty(str))
+                {
+                    Setting loaded = JsonUtility.FromJson<Setting>(str);
+                    if (loaded != null) setting = loaded;
+                }
+            }
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (!str.Equals(""))
-        {
-            setting = JsonUtility.FromJson<Setting>(str);
+            Debug.LogWarning("Fehler beim auslesen der Datei:" + e);
         }
 
         return setting;

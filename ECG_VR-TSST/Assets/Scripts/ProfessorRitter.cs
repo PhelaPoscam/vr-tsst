@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -60,13 +60,14 @@ public class ProfessorRitter : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (_animator == null) return;
         if(overwrite)
         {
             _animator.SetBool("talk", true);
         }
         else
         {
-            if (_audio.isPlaying)
+            if (_audio != null && _audio.isPlaying)
             {
                 _animator.SetBool("talk", true);
             }
@@ -84,8 +85,21 @@ public class ProfessorRitter : MonoBehaviour
     /// <param name="action"></param>
     public void PerformAction(CharacterAction action)
     {
+        if (action == null || action.Clip == null || _audio == null)
+        {
+            Debug.LogError("[ProfessorRitter] Cannot perform action: missing action, clips or AudioSource.");
+            return;
+        }
 
-        _audio.clip = action.Clip[language];
+        int clipIndex = (language < action.Clip.Length) ? language : 0;
+        AudioClip clip = action.Clip[clipIndex];
+        if (clip == null)
+        {
+            Debug.LogError("[ProfessorRitter] No audio clip assigned for action " + action.name + " (language index " + clipIndex + ").");
+            return;
+        }
+
+        _audio.clip = clip;
         _audio.Play();
         WriteLogEntry(action.name);
         //_animator.SetTrigger(action.AnimationTrigger);
@@ -192,21 +206,23 @@ public class ProfessorRitter : MonoBehaviour
     private Setting LoadSettings()
     {
         string path = Application.dataPath + "/Settings/Settings.txt";
-        string str = "";
         Setting setting = new Setting();
 
         try
         {
-            str = File.ReadAllText(path);
+            if (File.Exists(path))
+            {
+                string str = File.ReadAllText(path);
+                if (!string.IsNullOrEmpty(str))
+                {
+                    Setting loaded = JsonUtility.FromJson<Setting>(str);
+                    if (loaded != null) setting = loaded;
+                }
+            }
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
             Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (!str.Equals(""))
-        {
-            setting = JsonUtility.FromJson<Setting>(str);
         }
 
         return setting;

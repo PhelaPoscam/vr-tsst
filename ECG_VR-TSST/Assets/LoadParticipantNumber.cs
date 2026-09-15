@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,6 +38,9 @@ public class LoadParticipantNumber : MonoBehaviour {
             text = "1";
         }
 
-        inputField.text = text;
+        if (inputField != null)
+        {
+            inputField.text = text;
+        }
     }
 }

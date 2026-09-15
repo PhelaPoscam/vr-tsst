@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -32,7 +32,10 @@ public class Fader : MonoBehaviour
 
     private void Awake()
     {
-        _audio.GetFloat(_volumePropertyName, out _initialAudioVolume);
+        if (_audio != null)
+        {
+            _audio.GetFloat(_volumePropertyName, out _initialAudioVolume);
+        }
         if (!s_instance)
         {
             s_instance = this;
@@ -45,7 +48,10 @@ public class Fader : MonoBehaviour
     {
         if (type == VisualFadeType.Start) ScreenFader.Fade(color, time);
         //else if (type == VisualFadeType.View) SteamVR_Fade.View(color, time); //removed because never used
-        StartCoroutine(FadeAudio(time, fadeIn));
+        if (_audio != null)
+        {
+            StartCoroutine(FadeAudio(time, fadeIn));
+        }
     }
 
     private IEnumerator FadeAudio(float time, bool fadeIn)

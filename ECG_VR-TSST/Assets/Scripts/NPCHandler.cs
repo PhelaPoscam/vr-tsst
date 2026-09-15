@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,10 +13,8 @@ public class NPCHandler : MonoBehaviour {
     /// <param name="setting"></param>
     public void setNPCs(Setting setting)
     {
-        if (setting.oneAuditor)
-        {
-            secondNPC.SetActive(false);
-            thirdNPC.SetActive(false);
-        }
+        if (setting == null) return;
+        if (secondNPC != null) secondNPC.SetActive(!setting.oneAuditor);
+        if (thirdNPC != null) thirdNPC.SetActive(!setting.oneAuditor);
     }
 }

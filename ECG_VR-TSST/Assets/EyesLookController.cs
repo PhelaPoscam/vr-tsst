@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -16,6 +16,7 @@ public class EyesLookController : MonoBehaviour {
 
     private void Update()
     {
+        if (leftEye == null || rightEye == null || target == null) return;
         leftEye.transform.SetPositionAndRotation(leftEye.transform.position, LookAt(leftEye.transform.position, target.transform.position));
         rightEye.transform.SetPositionAndRotation(rightEye.transform.position, LookAt(rightEye.transform.position, target.transform.position));
         leftEye.transform.Rotate(new Vector3(90, 0, 0));

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
 using System;
@@ -68,6 +68,13 @@ public class SubtractionSeriesTask : AbstractTask
     [ContextMenu("GenerateSolutionText")]
     private void GenerateSolutionText()
     {
+        if (_subtrahend <= 0)
+        {
+            Debug.LogError("[SubtractionSeriesTask] _subtrahend must be greater than 0, otherwise the series never terminates. Current value: " + _subtrahend);
+            if (_solution != null) _solution.text = "";
+            return;
+        }
+
         int minuend = _origin;
         StringBuilder sb = new StringBuilder();
         for (byte b = 0; minuend > 0; b++)
@@ -77,7 +84,7 @@ public class SubtractionSeriesTask : AbstractTask
             sb.Append(minuend.ToString());
             minuend -= _subtrahend;
         }
-        _solution.text = sb.ToString();
+        if (_solution != null) _solution.text = sb.ToString();
     }
 
 
@@ -88,8 +95,8 @@ public class SubtractionSeriesTask : AbstractTask
     protected override void InactiveSetup()
     {
         _state = State.Inactive;
-        _taskText.enabled = false;
-        _solution.enabled = false;
+        if (_taskText != null) _taskText.enabled = false;
+        if (_solution != null) _solution.enabled = false;
     }
 
     /// <summary>
@@ -100,9 +107,12 @@ public class SubtractionSeriesTask : AbstractTask
     {
         base.Init();
         _state = State.Welcome;
-        _taskText.enabled = true;
-        _taskText.text = _origin + " - " + _subtrahend + " ...";
-        _solution.enabled = true;
+        if (_taskText != null)
+        {
+            _taskText.enabled = true;
+            _taskText.text = _origin + " - " + _subtrahend + " ...";
+        }
+        if (_solution != null) _solution.enabled = true;
         statusOfTask = CalculateTaskStatus(round, secondRoundActive, secondRoundAvailable);
         Debug.Log(statusOfTask);
         GenerateSolutionText();
@@ -116,7 +126,7 @@ public class SubtractionSeriesTask : AbstractTask
     /// <returns>boolean for the calling class to go on</returns>
     public override bool Next()
     {
-        throw new System.NotImplementedException();
+        return Next(round, secondRoundActive, secondRoundAvailable);
     }
 
     /// <summary>

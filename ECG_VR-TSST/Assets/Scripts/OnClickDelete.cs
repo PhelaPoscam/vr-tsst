@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,8 +13,11 @@ public class OnClickDelete : MonoBehaviour, IPointerClickHandler {
     public void OnPointerClick(PointerEventData eventData)
     {
         Image i = this.gameObject.GetComponent<Image>();
-        i.color = new Color(1, 1, 1, 0);
-        i.sprite = null;
+        if (i != null)
+        {
+            i.color = new Color(1, 1, 1, 0);
+            i.sprite = null;
+        }
     }
 
 }

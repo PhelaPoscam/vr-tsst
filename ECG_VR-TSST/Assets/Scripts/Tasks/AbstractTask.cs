@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Events;
 
 public abstract class AbstractTask : MonoBehaviour
@@ -29,7 +29,10 @@ public abstract class AbstractTask : MonoBehaviour
     [ContextMenu("Init")]
     protected virtual void Init()
     {
-        OptionalButtonSwitcher.Instance.EnableButtons(_optionalButtons);
+        if (OptionalButtonSwitcher.Instance != null)
+        {
+            OptionalButtonSwitcher.Instance.EnableButtons(_optionalButtons);
+        }
     }
 
     /// <summary>
@@ -54,8 +57,14 @@ public abstract class AbstractTask : MonoBehaviour
     protected virtual void Finish()
     {
 	    InactiveSetup();
-	    OptionalButtonSwitcher.Instance.DisableAll();
-        _finished.Invoke();
+	    if (OptionalButtonSwitcher.Instance != null)
+        {
+            OptionalButtonSwitcher.Instance.DisableAll();
+        }
+        if (_finished != null)
+        {
+            _finished.Invoke();
+        }
     }
 
     /// <summary>

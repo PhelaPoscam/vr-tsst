@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -40,15 +40,18 @@ public class Timer : MonoBehaviour
 
     private void DisableTexts()
     {
-        _timeText.enabled = false;
-        _modeText.enabled = false;
+        if (_timeText != null) _timeText.enabled = false;
+        if (_modeText != null) _modeText.enabled = false;
     }
 
     private void EnableTexts()
     {
-        _timeText.color = Color.white;
-        _timeText.enabled = true;
-        _modeText.enabled = true;
+        if (_timeText != null)
+        {
+            _timeText.color = Color.white;
+            _timeText.enabled = true;
+        }
+        if (_modeText != null) _modeText.enabled = true;
     }
 
     public void StartTimer(float time, Mode mode)
@@ -59,7 +62,7 @@ public class Timer : MonoBehaviour
         else _runningTimer = ManualTimer(time);
         StartCoroutine(_runningTimer);
         EnableTexts();
-        _modeText.text = mode.ToString();
+        if (_modeText != null) _modeText.text = mode.ToString();
     }
 
     public void StopTimer()
@@ -72,7 +75,7 @@ public class Timer : MonoBehaviour
     {
         while (time >= 0)
         {
-            _timeText.text = SecondsToMinuteString(time);
+            if (_timeText != null) _timeText.text = SecondsToMinuteString(time);
             time -= Time.deltaTime;
             yield return null;
         }
@@ -86,9 +89,12 @@ public class Timer : MonoBehaviour
         float t = 0;
         while (true)
         {
-            _timeText.text = SecondsToMinuteString(t);
+            if (_timeText != null)
+            {
+                _timeText.text = SecondsToMinuteString(t);
+                if (t > time) _timeText.color = Color.red;
+            }
             t += Time.deltaTime;
-            if (t > time) _timeText.color = Color.red;
             yield return null;
         }
     }
