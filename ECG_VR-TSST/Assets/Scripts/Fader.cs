@@ -28,13 +28,17 @@ public class Fader : MonoBehaviour
     [SerializeField]
     private string _volumePropertyName = "MasterVolume";
 
+    [SerializeField]
+    private bool _enableAudioFading = false;
+
     private float _initialAudioVolume;
+    private bool _hasVolumeProperty;
 
     private void Awake()
     {
-        if (_audio != null)
+        if (_audio != null && _enableAudioFading)
         {
-            _audio.GetFloat(_volumePropertyName, out _initialAudioVolume);
+            _hasVolumeProperty = _audio.GetFloat(_volumePropertyName, out _initialAudioVolume);
         }
         if (!s_instance)
         {
@@ -48,7 +52,7 @@ public class Fader : MonoBehaviour
     {
         if (type == VisualFadeType.Start) ScreenFader.Fade(color, time);
         //else if (type == VisualFadeType.View) SteamVR_Fade.View(color, time); //removed because never used
-        if (_audio != null)
+        if (_audio != null && _hasVolumeProperty)
         {
             StartCoroutine(FadeAudio(time, fadeIn));
         }
