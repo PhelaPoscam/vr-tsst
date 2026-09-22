@@ -78,7 +78,7 @@ public class pauseFreeCamera : MonoBehaviour {
                 switchCameraMode();
             }
 
-            if (Input.GetKeyDown(KeyCode.F12))
+            if (Input.GetKeyDown(toggleSlowMotionModeKey))
             {
                 usingSlowMotion = !usingSlowMotion;
                 if (usingSlowMotion == false)

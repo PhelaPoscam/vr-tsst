@@ -123,8 +123,8 @@ public class ChangePositionBack : AbstractTask {
     /// </summary>
     void WriteLogEntry()
     {
-        GameObject gameManager = GameObject.FindGameObjectWithTag("GameController");
-        string path = gameManager.GetComponent<GameManager>().pathValue;
+        string path = GetLogPath();
+        if (path == null) return;
 
         string textToWrite = $"Current task: \"ChangePositionBack\"; Current state of Task: \"{_state.ToString()}\" at {System.DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}\r\n";
 

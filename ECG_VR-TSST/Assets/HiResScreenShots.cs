@@ -20,8 +20,8 @@ public class HiResScreenShots : MonoBehaviour
 
     public static string ScreenShotName(int width, int height)
     {
-        return string.Format("{0}/../screenshots/screen_{1}x{2}_{3}.png",
-                             Application.dataPath,
+        return string.Format("{0}/screenshots/screen_{1}x{2}_{3}.png",
+                             Application.persistentDataPath,
                              width, height,
                              System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
     }
@@ -44,30 +44,28 @@ public class HiResScreenShots : MonoBehaviour
                 takeHiResShot = false;
                 return;
             }
-            #if !UNITY_4_3
-            #if !UNITY_WEBPLAYER
-                TextureFormat textForm = nonTransp;
-                if (transparent)
-                    textForm = transp;
-                RenderTexture rt = new RenderTexture(resWidth * enlarge, resHeight * enlarge, 24);
-                cam.targetTexture = rt;
-                Texture2D screenShot = new Texture2D(resWidth * enlarge, resHeight * enlarge, textForm, false);
-                cam.Render();
-                RenderTexture.active = rt;
-                screenShot.ReadPixels(new Rect(0, 0, resWidth * enlarge, resHeight * enlarge), 0, 0);
-                cam.targetTexture = null;
-                RenderTexture.active = null; // JC: added to avoid errors
-                Destroy(rt);
-                byte[] bytes = screenShot.EncodeToPNG();
-                string filename = ScreenShotName(resWidth * enlarge, resHeight * enlarge);
-                if (Directory.Exists(Application.dataPath + "/../screenshots/") == false)
-                {
-                    Directory.CreateDirectory(Application.dataPath + "/../screenshots/");
-                }
-                System.IO.File.WriteAllBytes(filename, bytes);
-                Debug.Log(string.Format("Took screenshot to: {0}", filename));
-            #endif
-            #endif
+            TextureFormat textForm = nonTransp;
+            if (transparent)
+                textForm = transp;
+            RenderTexture rt = new RenderTexture(resWidth * enlarge, resHeight * enlarge, 24);
+            cam.targetTexture = rt;
+            Texture2D screenShot = new Texture2D(resWidth * enlarge, resHeight * enlarge, textForm, false);
+            cam.Render();
+            RenderTexture.active = rt;
+            screenShot.ReadPixels(new Rect(0, 0, resWidth * enlarge, resHeight * enlarge), 0, 0);
+            cam.targetTexture = null;
+            RenderTexture.active = null; // JC: added to avoid errors
+            Destroy(rt);
+            byte[] bytes = screenShot.EncodeToPNG();
+            Destroy(screenShot);
+            string filename = ScreenShotName(resWidth * enlarge, resHeight * enlarge);
+            string screenshotDir = Path.GetDirectoryName(filename);
+            if (Directory.Exists(screenshotDir) == false)
+            {
+                Directory.CreateDirectory(screenshotDir);
+            }
+            System.IO.File.WriteAllBytes(filename, bytes);
+            Debug.Log(string.Format("Took screenshot to: {0}", filename));
 
             takeHiResShot = false;
         }

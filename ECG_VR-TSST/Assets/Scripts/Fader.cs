@@ -28,15 +28,12 @@ public class Fader : MonoBehaviour
     [SerializeField]
     private string _volumePropertyName = "MasterVolume";
 
-    [SerializeField]
-    private bool _enableAudioFading = false;
-
     private float _initialAudioVolume;
     private bool _hasVolumeProperty;
 
     private void Awake()
     {
-        if (_audio != null && _enableAudioFading)
+        if (_audio != null)
         {
             _hasVolumeProperty = _audio.GetFloat(_volumePropertyName, out _initialAudioVolume);
         }
@@ -63,20 +60,12 @@ public class Fader : MonoBehaviour
         float timer, targetVolume, currentVolume, delta;
         timer = time;
         _audio.GetFloat(_volumePropertyName, out currentVolume);
-        if (fadeIn)
-        {
-            targetVolume = _initialAudioVolume;
-        }
-        else
-        {
-            targetVolume = -50f;
-            delta = currentVolume - targetVolume;
-        }
+        targetVolume = fadeIn ? _initialAudioVolume : -50f;
         delta = targetVolume - currentVolume;
         while (timer > 0)
         {
-            //_audio.SetFloat(_volumePropertyName, currentVolume);
             currentVolume += delta / time * Time.deltaTime;
+            _audio.SetFloat(_volumePropertyName, currentVolume);
             timer -= Time.deltaTime;
             yield return null;
         }

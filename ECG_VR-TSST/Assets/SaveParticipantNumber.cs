@@ -17,7 +17,7 @@ public class SaveParticipantNumber : MonoBehaviour {
     public void OnButtonClicked()
     {
         if (inputField == null) return;
-        string dir = Application.dataPath + "/ParticipantNumber";
+        string dir = Application.persistentDataPath + "/ParticipantNumber";
         Directory.CreateDirectory(dir);
         path = dir + "/PN.txt";
         string text = inputField.text;

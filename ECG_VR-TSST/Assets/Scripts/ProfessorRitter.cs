@@ -113,8 +113,14 @@ public class ProfessorRitter : MonoBehaviour
     /// <param name="action"></param>
     void WriteLogEntry(string action)
     {
-        GameObject gameManager = GameObject.FindGameObjectWithTag("GameController");
-        string path = gameManager.GetComponent<GameManager>().pathValue;
+        GameObject gameManagerObject = GameObject.FindGameObjectWithTag("GameController");
+        GameManager gameManager = gameManagerObject != null ? gameManagerObject.GetComponent<GameManager>() : null;
+        if (gameManager == null)
+        {
+            Debug.LogWarning("[ProfessorRitter] No \"GameController\"-tagged GameManager found in the scene; log entry not written.");
+            return;
+        }
+        string path = gameManager.pathValue;
         string textToWrite;
 
 
@@ -205,27 +211,7 @@ public class ProfessorRitter : MonoBehaviour
     /// <returns></returns>
     private Setting LoadSettings()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        Setting setting = new Setting();
-
-        try
-        {
-            if (File.Exists(path))
-            {
-                string str = File.ReadAllText(path);
-                if (!string.IsNullOrEmpty(str))
-                {
-                    Setting loaded = JsonUtility.FromJson<Setting>(str);
-                    if (loaded != null) setting = loaded;
-                }
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        return setting;
+        return SettingsLoader.Load();
     }
 
 }

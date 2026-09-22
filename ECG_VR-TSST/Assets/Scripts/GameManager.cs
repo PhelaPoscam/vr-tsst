@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
 
         SetXRDisplayEnabled(true);
 
-        Directory.CreateDirectory(Application.dataPath + "/Logs");
+        Directory.CreateDirectory(Application.persistentDataPath + "/Logs");
 
         path = getWholePath();
 
@@ -117,6 +117,14 @@ public class GameManager : MonoBehaviour
             {
                 handler.setNPCs(currentSetting);
             }
+            else
+            {
+                Debug.LogWarning("[GameManager] \"NPCHandler\"-tagged object has no NPCHandler component; NPCs were not configured.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] No \"NPCHandler\"-tagged object found in the scene; NPCs were not configured.");
         }
 
         string[] firstRoundSettings = currentSetting.firstRound ?? new string[0];
@@ -383,34 +391,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private Setting LoadSettings()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        Setting setting = new Setting();
-
-        try
-        {
-            if (File.Exists(path))
-            {
-                string str = File.ReadAllText(path);
-                if (!string.IsNullOrEmpty(str))
-                {
-                    Setting loaded = JsonUtility.FromJson<Setting>(str);
-                    if (loaded != null) setting = loaded;
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Settings file does not exist at: " + path);
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (setting.firstRound == null) setting.firstRound = new string[0];
-        if (setting.secondRound == null) setting.secondRound = new string[0];
-
-        return setting;
+        return SettingsLoader.Load();
     }
 
     /// <summary>
@@ -582,7 +563,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private string getWholePath()
     {
-        string participantpath = Application.dataPath + "/ParticipantNumber" + "/PN.txt";
+        string participantpath = Application.persistentDataPath + "/ParticipantNumber" + "/PN.txt";
         string wholePath = "";
         participantNumber = "";
         string restOfPath = "/Logs" + "/Log" + System.DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss");
@@ -594,7 +575,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Fehler beim auslesen der Datei:" + e);
         }
-        wholePath = $"{Application.dataPath}{restOfPath}_ParticipantNumber_{participantNumber}.txt";
+        wholePath = $"{Application.persistentDataPath}{restOfPath}_ParticipantNumber_{participantNumber}.txt";
         return wholePath;
     }
 

@@ -196,7 +196,7 @@ public class StroopTestTask : AbstractTask
                 {
                     ProfessorRitter.Instance.Overwrite = true;
                     ProfessorRitter.Instance.PerformAction(_greeting);
-                    Timer.Instance.StartTimer(_greeting.Clip[language].length, Timer.Mode.Automatic);
+                    Timer.Instance.StartTimer(ClipLength(_greeting, language), Timer.Mode.Automatic);
                     OptionalButtonSwitcher.Instance.DisableAll();
                     MainButtonSwitcher.Instance.Next(false);
                     _state = State.Initialized;
@@ -205,7 +205,7 @@ public class StroopTestTask : AbstractTask
                 {
                     ProfessorRitter.Instance.Overwrite = true;
                     ProfessorRitter.Instance.PerformAction(_greetingSecondRound);
-                    Timer.Instance.StartTimer(_greetingSecondRound.Clip[language].length, Timer.Mode.Automatic);
+                    Timer.Instance.StartTimer(ClipLength(_greetingSecondRound, language), Timer.Mode.Automatic);
                     OptionalButtonSwitcher.Instance.DisableAll();
                     MainButtonSwitcher.Instance.Next(false);
                     _state = State.Initialized;
@@ -213,7 +213,7 @@ public class StroopTestTask : AbstractTask
                 else if (statusOfTask.Equals("InBetween") || statusOfTask.Equals("EndOfFirstRound") || statusOfTask.Equals("EndOfSecondRound") || statusOfTask.Equals("EndOfTest") || statusOfTask.Equals("EndOfFirstRoundNoAnnouncement"))
                 {
                     ProfessorRitter.Instance.PerformAction(_task);
-                    Timer.Instance.StartTimer(_task.Clip[language].length, Timer.Mode.Automatic);
+                    Timer.Instance.StartTimer(ClipLength(_task, language), Timer.Mode.Automatic);
                     OptionalButtonSwitcher.Instance.DisableAll();
                     MainButtonSwitcher.Instance.Next(false);
                     _state = State.TaskAction;
@@ -225,7 +225,7 @@ public class StroopTestTask : AbstractTask
                 OptionalButtonSwitcher.Instance.DisableAll();
                 MainButtonSwitcher.Instance.Next(false);
                 ProfessorRitter.Instance.PerformAction(_task);
-                Timer.Instance.StartTimer(_task.Clip[language].length, Timer.Mode.Automatic);
+                Timer.Instance.StartTimer(ClipLength(_task, language), Timer.Mode.Automatic);
                 return true;
             case State.TaskAction:
                 OptionalButtonSwitcher.Instance.ReenableButtons();
@@ -242,13 +242,13 @@ public class StroopTestTask : AbstractTask
                 {
 
                     ProfessorRitter.Instance.PerformAction(_thanksNextTask);
-                    Timer.Instance.StartTimer(_thanksNextTask.Clip[language].length, Timer.Mode.Automatic);
+                    Timer.Instance.StartTimer(ClipLength(_thanksNextTask, language), Timer.Mode.Automatic);
                 }
                 else if (statusOfTask.Equals("EndOfFirstRound") || statusOfTask.Equals("FirstRoundOnlyTask"))
                 {
 
                     ProfessorRitter.Instance.PerformAction(_thanksNextRound);
-                    Timer.Instance.StartTimer(_thanksNextRound.Clip[language].length, Timer.Mode.Automatic);
+                    Timer.Instance.StartTimer(ClipLength(_thanksNextRound, language), Timer.Mode.Automatic);
                 }
                 else if (statusOfTask.Equals("EndOfTest") || statusOfTask.Equals("EndOfSecondRound")
                         || statusOfTask.Equals("FirstRoundOnlyTaskOnlyRound") || statusOfTask.Equals("SecondRoundOnlyTask")
@@ -256,7 +256,7 @@ public class StroopTestTask : AbstractTask
                 {
 
                     ProfessorRitter.Instance.PerformAction(_endOfTest);
-                    Timer.Instance.StartTimer(_endOfTest.Clip[language].length, Timer.Mode.Automatic);
+                    Timer.Instance.StartTimer(ClipLength(_endOfTest, language), Timer.Mode.Automatic);
                 }
                 return true;
             case State.ThanksAction:
@@ -409,8 +409,8 @@ public class StroopTestTask : AbstractTask
     /// </summary>
     void WriteLogEntry()
     {
-        GameObject gameManager = GameObject.FindGameObjectWithTag("GameController");
-        string path = gameManager.GetComponent<GameManager>().pathValue;
+        string path = GetLogPath();
+        if (path == null) return;
 
         string textToWrite = $"Current task: \"StroopTestTask\"; Current state of Task: \"{_state.ToString()}\" at {System.DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}\r\n";
 
@@ -431,26 +431,7 @@ public class StroopTestTask : AbstractTask
     /// <returns></returns>
     private Setting LoadSettings()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        string str = "";
-        Setting setting = new Setting();
-
-        try
-        {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
-        }
-        catch (IOException e)
-        {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (!str.Equals(""))
-        {
-            setting = JsonUtility.FromJson<Setting>(str);
-        }
-
-        return setting;
+        return SettingsLoader.Load();
     }
 
 }

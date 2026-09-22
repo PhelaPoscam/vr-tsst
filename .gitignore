@@ -71,6 +71,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Runtime test logs
+**/Assets/Logs/Log*.txt
+**/Assets/Logs/Log*.txt.meta
+
 Precompiled_Build/
 .commandcode/
 .agents/
@@ -78,4 +82,5 @@ Precompiled_Build/
 .claude/
 .cursor/
 .windsurf/
+
 

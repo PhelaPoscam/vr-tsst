@@ -18,8 +18,8 @@ public class LoadParticipantNumber : MonoBehaviour {
     /// </summary>
     private void Awake()
     {
-        Directory.CreateDirectory(Application.dataPath + "/ParticipantNumber");
-        path = Application.dataPath + "/ParticipantNumber" + "/PN.txt";
+        Directory.CreateDirectory(Application.persistentDataPath + "/ParticipantNumber");
+        path = Application.persistentDataPath + "/ParticipantNumber" + "/PN.txt";
         string text = "";
 
         if (File.Exists(path))

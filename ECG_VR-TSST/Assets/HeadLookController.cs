@@ -170,7 +170,7 @@ public class HeadLookController : MonoBehaviour
             if (segment.firstTransform.gameObject.tag.Equals("Eye") && newEyeTarget)
             {
                 newEyeTarget = false;
-                StartCoroutine("NextEyeTarget");
+                StartCoroutine(NextEyeTarget());
                 List<Transform> eyeDistractionPoints = new List<Transform>();
                 foreach(Transform child in gTarget)
                 {

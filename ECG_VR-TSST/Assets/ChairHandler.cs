@@ -14,40 +14,7 @@ public class ChairHandler : MonoBehaviour {
     /// </summary>
     public void Awake()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        string str = null;
-        setting = new Setting();
-
-        try
-        {
-            if (File.Exists(path))
-            {
-                str = File.ReadAllText(path);
-                Debug.Log("ausgelesen");
-            }
-            else
-            {
-                Debug.LogWarning("Settings file does not exist at: " + path);
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (!string.IsNullOrEmpty(str)) 
-        {
-            try
-            {
-                Setting loaded = JsonUtility.FromJson<Setting>(str);
-                if (loaded != null) setting = loaded;
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("Fehler beim deserialisieren der Settings: " + e);
-            }
-        }
-
+        setting = SettingsLoader.Load();
         setChairs(setting);
     }
 

@@ -10,55 +10,27 @@ public class saveLoadWallText : MonoBehaviour {
     /// </summary>
     private void Awake()
     {
-        Directory.CreateDirectory(Application.dataPath + "/WallText");
-        string path = Application.dataPath + "/WallText/WallText" + 0 + ".txt";
-        string str = "";
-        WaitingRoomText waitText = new WaitingRoomText();
+        Directory.CreateDirectory(Application.persistentDataPath + "/WallText");
+
+        // Seed each language file independently - a missing one used to leave the
+        // waiting room walls blank if only the other language had been written.
+        SeedIfMissing(0, new WaitingRoomText("Bitte haben Sie noch einen Moment Geduld! Sie können gleich zu dem/den Prüfer(n) ins Büro, um mit den Aufgaben zu starten.", "Im später folgenden Gespräch werden sowohl Bild als auch Ton aufgezeichnet werden!", "Bitte stehen Sie auf.\r\nDer/Die Prüfer ist/sind jetzt für Sie bereit."));
+        SeedIfMissing(1, new WaitingRoomText("Please be patient for a moment! You can go straight to the auditor(s) into the office to start with the tasks any moment.", "In the following conversation both picture and sound will be recorded!", "Please stand up.\r\nThe auditor(s) is/are now ready for you."));
+    }
+
+    private void SeedIfMissing(int language, WaitingRoomText defaults)
+    {
+        string path = Application.persistentDataPath + "/WallText/WallText" + language + ".txt";
 
         try
         {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
+            if (File.Exists(path) && !string.IsNullOrEmpty(File.ReadAllText(path))) return;
+            File.WriteAllText(path, JsonUtility.ToJson(defaults));
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
+            Debug.LogError("[saveLoadWallText] Could not seed wall text " + language + ": " + e);
         }
-
-        if (str.Equals(""))
-        {
-            waitText = new WaitingRoomText("Bitte haben Sie noch einen Moment Geduld! Sie können gleich zu dem/den Prüfer(n) ins Büro, um mit den Aufgaben zu starten.", "Im später folgenden Gespräch werden sowohl Bild als auch Ton aufgezeichnet werden!", "Bitte stehen Sie auf.\r\nDer/Die Prüfer ist/sind jetzt für Sie bereit.");
-            str = JsonUtility.ToJson(waitText);
-
-            Debug.Log(waitText.initialText);
-
-            try
-            {
-                File.WriteAllText(path, str);
-            }
-            catch (IOException e)
-            {
-                Debug.Log("Fehler beim schreiben der Datei:" + e);
-            }
-
-            path = Application.dataPath + "/WallText/WallText" + 1 + ".txt";
-            waitText = new WaitingRoomText("Please be patient for a moment! You can go straight to the auditor(s) into the office to start with the tasks any moment.", "In the following conversation both picture and sound will be recorded!", "Please stand up.\r\nThe auditor(s) is/are now ready for you.");
-            str = JsonUtility.ToJson(waitText);
-
-            try
-            {
-                File.WriteAllText(path, str);
-            }
-            catch (IOException e)
-            {
-                Debug.Log("Fehler beim schreiben der Datei:" + e);
-            }
-        }
-        else
-        {
-            //Nothing to do
-        }
-
-    }	
+    }
     
 }

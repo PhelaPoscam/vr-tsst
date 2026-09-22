@@ -11,12 +11,14 @@ public class UiLog : MonoBehaviour
 
     private Text _text;
     private float _timer;
+    private bool _resetRoutineRunning;
 
     private void OnEnable()
     {
         Application.logMessageReceived += HandleLog;
         _text = gameObject.GetComponent<Text>();
         _text.enabled = false;
+        _resetRoutineRunning = false;
     }
 
     private void OnDisable()
@@ -50,8 +52,12 @@ public class UiLog : MonoBehaviour
                 break;
         }
         _text.text = logString;
-        if (_timer > 0) StartCoroutine(ResetRoutine());
         _timer = _resetTime;
+        if (!_resetRoutineRunning)
+        {
+            _resetRoutineRunning = true;
+            StartCoroutine(ResetRoutine());
+        }
     }
 
     private IEnumerator ResetRoutine()
@@ -62,6 +68,7 @@ public class UiLog : MonoBehaviour
             yield return null;
         }
         _text.enabled = false;
+        _resetRoutineRunning = false;
     }
 
 }

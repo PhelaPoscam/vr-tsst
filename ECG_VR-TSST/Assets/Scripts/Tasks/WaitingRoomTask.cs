@@ -137,8 +137,8 @@ public class WaitingRoomTask : AbstractTask
     /// </summary>
     void WriteLogEntry()
     {
-        GameObject gameManager = GameObject.FindGameObjectWithTag("GameController");
-        string path = gameManager.GetComponent<GameManager>().pathValue;
+        string path = GetLogPath();
+        if (path == null) return;
 
         string textToWrite = "Current task: \"WaitingRoomTask\"; Current state of Task: \"" + _state.ToString() + "\" at " + System.DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss") + "\r\n";
 
@@ -159,28 +159,29 @@ public class WaitingRoomTask : AbstractTask
     {
         string str = "";
         byte language = LoadSettings().language;
-        string path = Application.dataPath + "/WallText/WallText" + language + ".txt";
+        string path = Application.persistentDataPath + "/WallText/WallText" + language + ".txt";
 
         WaitingRoomText waitText = new WaitingRoomText();
 
         try
         {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
+            if (File.Exists(path)) str = File.ReadAllText(path);
+            else Debug.LogWarning("[WaitingRoomTask] No wall text file at: " + path);
         }
-        catch (IOException e)
+        catch (System.Exception e)
         {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
+            Debug.LogError("[WaitingRoomTask] Could not read wall text: " + e);
         }
 
-        if (!str.Equals(""))
+        if (!string.IsNullOrEmpty(str))
         {
-            waitText = JsonUtility.FromJson<WaitingRoomText>(str);
+            WaitingRoomText loaded = JsonUtility.FromJson<WaitingRoomText>(str);
+            if (loaded != null) waitText = loaded;
         }
 
-        _initalText.text = waitText.initialText;
-        _surveillanceText.text = waitText.surveillanceText;
-        _readyText.text = waitText.readyText;
+        if (_initalText != null) _initalText.text = waitText.initialText ?? "";
+        if (_surveillanceText != null) _surveillanceText.text = waitText.surveillanceText ?? "";
+        if (_readyText != null) _readyText.text = waitText.readyText ?? "";
     }
 
     /// <summary>
@@ -189,26 +190,7 @@ public class WaitingRoomTask : AbstractTask
     /// <returns></returns>
     private Setting LoadSettings()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        string str = "";
-        Setting setting = new Setting();
-
-        try
-        {
-            str = File.ReadAllText(path);
-            Debug.Log("ausgelesen");
-        }
-        catch (IOException e)
-        {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (!str.Equals(""))
-        {
-            setting = JsonUtility.FromJson<Setting>(str);
-        }
-
-        return setting;
+        return SettingsLoader.Load();
     }
 
 }

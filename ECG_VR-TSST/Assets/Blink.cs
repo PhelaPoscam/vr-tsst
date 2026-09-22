@@ -26,7 +26,7 @@ public class Blink : MonoBehaviour {
             Debug.LogWarning("[Blink] Eyelid transforms not fully assigned on " + gameObject.name);
             return;
         }
-        StartCoroutine("EyesClosed");
+        StartCoroutine(EyesClosed());
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class Blink : MonoBehaviour {
         lowLidR.transform.position = new Vector3(lowLidR.transform.position.x, lowLidR.transform.position.y + 0.002f, lowLidR.transform.position.z);
 
         yield return new WaitForSecondsRealtime(0.15f);
-        StartCoroutine("EyesOpen");
+        StartCoroutine(EyesOpen());
     }
 
     /// <summary>
@@ -58,6 +58,6 @@ public class Blink : MonoBehaviour {
         lowLidR.transform.position = new Vector3(lowLidR.transform.position.x, lowLidR.transform.position.y - 0.002f, lowLidR.transform.position.z);
         int random = UnityEngine.Random.Range(1, 9);
         yield return new WaitForSecondsRealtime(random);
-        StartCoroutine("EyesClosed");
+        StartCoroutine(EyesClosed());
     }
 }

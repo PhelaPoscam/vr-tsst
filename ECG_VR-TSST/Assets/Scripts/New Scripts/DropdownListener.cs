@@ -11,12 +11,23 @@ public class DropdownListener : MonoBehaviour
     public Toggle Reihen;
     public Toggle Kopfrechnen;
     public Dropdown Drop;
-    private bool toggleActive;
-    private void Update()
+
+    private void OnEnable()
     {
         if (Drop == null) return;
+        Drop.onValueChanged.AddListener(UpdateInteractable);
+        UpdateInteractable(Drop.value);
+    }
 
-        bool interactable = Drop.value != 0;
+    private void OnDisable()
+    {
+        if (Drop == null) return;
+        Drop.onValueChanged.RemoveListener(UpdateInteractable);
+    }
+
+    private void UpdateInteractable(int value)
+    {
+        bool interactable = value != 0;
         if (Vortrag != null) Vortrag.interactable = interactable;
         if (Rueckwaerts != null) Rueckwaerts.interactable = interactable;
         if (Reihen != null) Reihen.interactable = interactable;

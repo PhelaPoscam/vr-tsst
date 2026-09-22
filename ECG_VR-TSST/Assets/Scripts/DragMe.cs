@@ -49,7 +49,7 @@ public class DragMe : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		if (m_DraggingIcons[eventData.pointerId] != null)
+		if (m_DraggingIcons.TryGetValue(eventData.pointerId, out var icon) && icon != null)
 			SetDraggedPosition(eventData);
 	}
 
@@ -73,10 +73,11 @@ public class DragMe : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     /// <param name="eventData"></param>
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		if (m_DraggingIcons[eventData.pointerId] != null)
-			Destroy(m_DraggingIcons[eventData.pointerId]);
-
-		m_DraggingIcons[eventData.pointerId] = null;
+		if (m_DraggingIcons.TryGetValue(eventData.pointerId, out var icon) && icon != null)
+		{
+			Destroy(icon);
+			m_DraggingIcons[eventData.pointerId] = null;
+		}
 	}
 
 	static public T FindInParents<T>(GameObject go) where T : Component

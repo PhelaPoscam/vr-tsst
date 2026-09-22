@@ -14,6 +14,9 @@ namespace NonVRDemo.Editor
     public static class NonVRBuildScript
     {
         private const string NonVRModePrefKey = "ECG_VR_TSST_NonVR_Mode_Enabled";
+        // Session-only, consumed on the next Play - keeps the quick-launch commands from
+        // leaking Non-VR mode into ordinary Play sessions after they're used once.
+        private const string NonVROneShotKey = "ECG_VR_TSST_NonVR_Mode_OneShot";
         private const string LauncherScenePath = "Assets/NonVR_Demo/Scenes/NonVR_Launcher.unity";
         private const string MainLogicScenePath = "Assets/Scenes/MainLogic.unity";
         private const string RoomsScenePath = "Assets/Scenes/Rooms.unity";
@@ -28,7 +31,10 @@ namespace NonVRDemo.Editor
         {
             if (state == PlayModeStateChange.EnteredPlayMode)
             {
-                if (EditorPrefs.GetBool(NonVRModePrefKey, false))
+                bool oneShot = SessionState.GetBool(NonVROneShotKey, false);
+                SessionState.SetBool(NonVROneShotKey, false);
+
+                if (oneShot || EditorPrefs.GetBool(NonVRModePrefKey, false))
                 {
                     Debug.Log("[NonVR] Non-VR Mode active for Play Mode session.");
                     NonVRBootstrap.IsNonVRModeActive = true;
@@ -47,7 +53,7 @@ namespace NonVRDemo.Editor
 
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
-                EditorPrefs.SetBool(NonVRModePrefKey, true);
+                SessionState.SetBool(NonVROneShotKey, true);
                 EditorSceneManager.OpenScene(MainLogicScenePath);
                 EditorApplication.isPlaying = true;
             }
@@ -64,7 +70,7 @@ namespace NonVRDemo.Editor
 
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
-                EditorPrefs.SetBool(NonVRModePrefKey, true);
+                SessionState.SetBool(NonVROneShotKey, true);
                 EditorSceneManager.OpenScene(MainMenuScenePath);
                 EditorApplication.isPlaying = true;
             }
@@ -83,7 +89,7 @@ namespace NonVRDemo.Editor
 
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
-                EditorPrefs.SetBool(NonVRModePrefKey, true);
+                SessionState.SetBool(NonVROneShotKey, true);
                 EditorSceneManager.OpenScene(LauncherScenePath);
                 EditorApplication.isPlaying = true;
             }

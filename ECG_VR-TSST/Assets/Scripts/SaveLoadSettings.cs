@@ -32,40 +32,7 @@ public class SaveLoadSettings : MonoBehaviour
     /// </summary>
     public void Load()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        string str = "";
-        Setting setting = new Setting();
-        try
-        {
-            if (File.Exists(path))
-            {
-                str = File.ReadAllText(path);
-            }
-            else
-            {
-                Debug.LogWarning("Settings file does not exist at: " + path);
-            }
-        }
-        catch(System.Exception e)
-        {
-            Debug.Log("Fehler beim auslesen der Datei:" + e);
-        }
-
-        if (!string.IsNullOrEmpty(str))
-        {
-            try
-            {
-                Setting loaded = JsonUtility.FromJson<Setting>(str);
-                if (loaded != null) setting = loaded;
-            }
-            catch(System.Exception e)
-            {
-                Debug.LogError("Fehler beim deserialisieren der Settings: " + e);
-            }
-        }
-
-        if (setting.firstRound == null) setting.firstRound = new string[0];
-        if (setting.secondRound == null) setting.secondRound = new string[0];
+        Setting setting = SettingsLoader.Load();
 
         if (pruefer != null)
         {
@@ -162,7 +129,7 @@ public class SaveLoadSettings : MonoBehaviour
         {
             savedText.text = "Settings Loaded!";
             savedText.gameObject.SetActive(true);
-            StartCoroutine("Wait");
+            StartCoroutine(Wait());
         }
     }
 
@@ -249,8 +216,8 @@ public class SaveLoadSettings : MonoBehaviour
 
         Setting currentSetting = new Setting(oneAuditor, secondRoundAnnouncement, firstRound, secondRound, language, firstIsSecond);
         string str = JsonUtility.ToJson(currentSetting);
-        Directory.CreateDirectory(Application.dataPath + "/Settings");
-        string path = Application.dataPath + "/Settings/Settings.txt";
+        Directory.CreateDirectory(Application.persistentDataPath + "/Settings");
+        string path = SettingsLoader.Path;
 
         try
         {
@@ -258,14 +225,14 @@ public class SaveLoadSettings : MonoBehaviour
         }
         catch (IOException e)
         {
-            Debug.Log("Fehler beim schreiben der Datei:" + e);
+            Debug.LogError("Fehler beim schreiben der Datei:" + e);
         }
 
         if (savedText != null)
         {
             savedText.text = "Settings Saved!";
             savedText.gameObject.SetActive(true);
-            StartCoroutine("Wait");
+            StartCoroutine(Wait());
         }
     }
 

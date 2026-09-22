@@ -45,27 +45,7 @@ public class CharacterAction : ScriptableObject
 
     private Setting LoadSettings()
     {
-        string path = Application.dataPath + "/Settings/Settings.txt";
-        Setting setting = new Setting();
-
-        try
-        {
-            if (File.Exists(path))
-            {
-                string str = File.ReadAllText(path);
-                if (!string.IsNullOrEmpty(str))
-                {
-                    Setting loaded = JsonUtility.FromJson<Setting>(str);
-                    if (loaded != null) setting = loaded;
-                }
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogWarning("Fehler beim auslesen der Datei:" + e);
-        }
-
-        return setting;
+        return SettingsLoader.Load();
     }
 
 }
