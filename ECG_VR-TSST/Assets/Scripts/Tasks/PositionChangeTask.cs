@@ -73,7 +73,8 @@ public class PositionChangeTask : AbstractTask
             case State.Initialized:
                 _state = State.FadeOut;
 	            MainButtonSwitcher.Instance.All(false);
-                Door.Instance.Open();
+                /// The door was removed in this version:
+                /// Door.Instance.Open();
 	            Fader.Instance.Fade(Color.black, _fadingTime, false, Fader.VisualFadeType.Start);
                 Timer.Instance.StartTimer(_fadingTime, Timer.Mode.Automatic);
                 return true;
@@ -82,7 +83,8 @@ public class PositionChangeTask : AbstractTask
                 _waitingRoomRig.SetActive(false);
                 _officeRig.SetActive(true);
                 ScreenFader.Fade(Color.black, 0f);
-                Door.Instance.Close();
+                /// The door was removed in this version:
+                /// Door.Instance.Close();
                 Timer.Instance.StartTimer(0.2f, Timer.Mode.Automatic);
                 return true;
             case State.Change:
